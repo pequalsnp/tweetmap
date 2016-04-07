@@ -1,0 +1,33 @@
+{
+  "name": "tweetmap",
+  "version": "1.0.0",
+  "description": "Tweet Map",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "kgalloway@twitter.com",
+  "license": "MIT",
+  "dependencies": {
+    "CBuffer": "^1.1.1",
+    "ajax-request": "^1.2.1",
+    "config": "^1.20.0",
+    "cson": "^3.0.2",
+    "express": "^4.13.4",
+    "hjson": "^1.7.6",
+    "iced-coffee-script": "^108.0.11",
+    "js-yaml": "^3.5.5",
+    "properties": "^1.2.1",
+    "toml": "^2.3.0",
+    "twitter": "^1.2.5",
+    "yaml": "^0.3.0"
+  },
+  "devDependencies": {
+    "coffee-script": "^1.10.0",
+    "coffeeify": "^2.0.1",
+    "gulp": "^3.9.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-coffee": "^2.3.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.7"
+  }
+}
