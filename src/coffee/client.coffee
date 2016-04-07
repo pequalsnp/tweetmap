@@ -8,7 +8,7 @@ map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v8',
     center: [0, 0],
-    zoom: 1
+    zoom: 2
 })
 
 buffer = new CBuffer(10)

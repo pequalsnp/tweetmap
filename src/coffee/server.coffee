@@ -2,6 +2,7 @@ express = require 'express'
 Twitter = require 'twitter'
 CBuffer = require 'CBuffer'
 twitterConfig = require('config').get('Twitter')
+ajaxRequest = require 'ajax-request'
 
 twitter = new Twitter({
   consumer_key: twitterConfig.consumer_key,
@@ -12,22 +13,41 @@ twitter = new Twitter({
 
 buffer = new CBuffer(1000)
 
-twitter.stream 'statuses/filter', {locations: "-180,-90,180,90"}, (stream) ->
-  stream.on('data', (tweet) ->
-    if (tweet.coordinates)
-      buffer.push(tweet)
-  )
+startStream = ->
+  twitter.stream 'statuses/filter', {locations: "-180,-90,180,90"}, (stream) ->
+    stream.on('data', (tweet) ->
+      if tweet.coordinates
+        buffer.push(tweet)
+      else if tweet.place and tweet.place.id
+        twitter.get('geo/id/' + tweet.place.id + '.json', (error, place, response) ->
+          if place and place.centroid
+            console.log(place.centroid)
+        )
+    )
+
+    stream.on('error', (error) ->
+      console.log("Streaming API error: " + error)
+    )
+
+    stream.on('end', (end) ->
+      console.log("Streaming API ended: " + end)
+      startStream()
+    )
 
 app = express()
 
 app.use(express.static('dist'))
 
-app.get('/tweets', (req, res) ->
-  oldBuf = buffer
-  buffer = new CBuffer(1000)
-  result =
-    {text: tweet.text, url: 'https://twitter.com/' + tweet.user.screen_name + '/status/' + tweet.id_str, longLat: tweet.coordinates.coordinates} for tweet in oldBuf.toArray()
-  res.send(result)
+app.get('/tweetoembed', (req, res) ->
+  ajaxRequest({
+    url: "/tweetoembed"
+    method: 'GET'
+    data: {
+      id: feature.properties.id_str
+    }
+  }, (err, res, body) ->
+    res.send(body)
+  )
 )
 
 tweetToFeature = (tweet) ->
@@ -35,7 +55,7 @@ tweetToFeature = (tweet) ->
     type: "Feature"
     geometry:
       tweet.coordinates
-    properties: {}
+    properties: tweet
   }
 
 app.get('/tweetsGeoJson', (req, res) ->
@@ -49,3 +69,5 @@ app.get('/tweetsGeoJson', (req, res) ->
 app.listen(3000, ->
   console.log('Example app listening on port 3000!')
 )
+
+startStream()
