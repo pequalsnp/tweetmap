@@ -30,13 +30,19 @@ app.get('/tweets', (req, res) ->
   res.send(result)
 )
 
-app.get('/tweetsGeoJson', (req, res) ->
-  result =
+tweetToFeature = (tweet) ->
+  {
     type: "Feature"
     geometry:
-      type: "Point"
-      coordinates: buffer.pop()
+      tweet.coordinates
     properties: {}
+  }
+
+app.get('/tweetsGeoJson', (req, res) ->
+  features = (tweetToFeature(tweet) for tweet in buffer.toArray())
+  result =
+    type: "FeatureCollection"
+    features: features
   res.send(result)
 )
 
